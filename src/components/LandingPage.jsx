@@ -1,9 +1,14 @@
+import { useEffect, useState } from "react";
 import {
   audiences,
   helpActions,
   impactStats,
   missionCards,
 } from "../content/landingContent";
+
+const CONTACT_EMAIL = "lecercledesrobotsdisparus@gmail.com";
+const LINKEDIN_URL = "https://www.linkedin.com/company/le-cercle-des-robots-disparus/";
+const WEBSITE_URL = "http://lecercledesrobotsdisparus.org/";
 
 function IconRobot(props) {
   return (
@@ -119,19 +124,108 @@ function MissionCard({ title, description, Icon }) {
   );
 }
 
-function ActionCard({ title, description, cta, href }) {
+function ActionCard({ title, description, cta, onClick }) {
   return (
     <article className="rounded-2xl border border-slate-200/80 bg-white p-6 transition duration-300 hover:border-[var(--color-accent-soft)] hover:bg-[var(--color-surface)]">
       <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
       <p className="mt-3 text-sm leading-relaxed text-slate-600">{description}</p>
-      <a
-        href={href}
+      <button
+        type="button"
+        onClick={onClick}
         className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)] transition hover:gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2"
       >
         {cta}
         <span aria-hidden="true">→</span>
-      </a>
+      </button>
     </article>
+  );
+}
+
+function HelpModal({ action, isOpen, onClose, onCopyEmail, onSpreadWord, copyState, spreadState }) {
+  if (!isOpen) {
+    return null;
+  }
+
+  const spreadLabel =
+    spreadState === "done" ? "Message copié" : spreadState === "error" ? "Partage indisponible" : "Faire connaître le projet";
+  const copyLabel = copyState === "done" ? "Email copié" : copyState === "error" ? "Copie indisponible" : "Copier l'email";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <button
+        type="button"
+        aria-label="Fermer la fenêtre d'aide"
+        onClick={onClose}
+        className="absolute inset-0 bg-slate-900/45 backdrop-blur-[1px]"
+      />
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="help-modal-title"
+        className="relative z-10 w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.7)] md:p-8"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-full border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:border-slate-400 hover:text-slate-900"
+        >
+          Fermer
+        </button>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-accent)]">Merci</p>
+        <h3 id="help-modal-title" className="mt-2 text-2xl font-bold text-slate-900">
+          Merci de vouloir aider le cercle.
+        </h3>
+        <p className="mt-4 text-sm leading-relaxed text-slate-600">
+          Votre choix <span className="font-semibold text-slate-900">"{action?.title}"</span> est précieux. Vous
+          pouvez nous contacter directement, relayer notre initiative autour de vous, ou nous suivre pour rester
+          connectés.
+        </p>
+
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Contact direct</p>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <code className="rounded-lg bg-white px-3 py-2 text-sm text-slate-700">{CONTACT_EMAIL}</code>
+            <button
+              type="button"
+              onClick={onCopyEmail}
+              className="rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-400 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            >
+              {copyLabel}
+            </button>
+          </div>
+          <p className="mt-3 text-xs text-slate-600">
+            Site:{" "}
+            <a href={WEBSITE_URL} className="font-semibold text-[var(--color-accent)] hover:underline">
+              {WEBSITE_URL}
+            </a>
+          </p>
+        </div>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <a
+            href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Aide pour Le cercle des robots disparus")}`}
+            className="inline-flex items-center justify-center rounded-full bg-[var(--color-accent)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--color-accent-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2"
+          >
+            Envoyer un email
+          </a>
+          <a
+            href={LINKEDIN_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:border-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
+          >
+            Suivre sur LinkedIn
+          </a>
+          <button
+            type="button"
+            onClick={onSpreadWord}
+            className="sm:col-span-2 inline-flex items-center justify-center rounded-full border border-[var(--color-accent-soft)] bg-[var(--color-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--color-accent-dark)] transition hover:border-[var(--color-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-soft)] focus-visible:ring-offset-2"
+          >
+            {spreadLabel}
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -149,6 +243,69 @@ function ImpactCard({ value, suffix, label }) {
 
 export default function LandingPage() {
   const showImpact = false;
+  const [activeHelpAction, setActiveHelpAction] = useState(null);
+  const [copyState, setCopyState] = useState("idle");
+  const [spreadState, setSpreadState] = useState("idle");
+  const isHelpModalOpen = Boolean(activeHelpAction);
+
+  useEffect(() => {
+    if (!isHelpModalOpen) {
+      return undefined;
+    }
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setActiveHelpAction(null);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isHelpModalOpen]);
+
+  const openHelpModal = (action) => {
+    setActiveHelpAction(action);
+    setCopyState("idle");
+    setSpreadState("idle");
+  };
+
+  const closeHelpModal = () => {
+    setActiveHelpAction(null);
+  };
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL);
+      setCopyState("done");
+    } catch {
+      setCopyState("error");
+    }
+  };
+
+  const handleSpreadWord = async () => {
+    const url = WEBSITE_URL;
+    const text = "Je soutiens Le cercle des robots disparus : sauver des robots pour apprendre, créer et transmettre.";
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Le cercle des robots disparus",
+          text,
+          url,
+        });
+      } else {
+        await navigator.clipboard.writeText(`${text} ${url}`);
+      }
+      setSpreadState("done");
+    } catch {
+      setSpreadState("error");
+    }
+  };
 
   return (
     <div className="relative overflow-hidden bg-[var(--color-page)] text-slate-900">
@@ -180,7 +337,7 @@ export default function LandingPage() {
           <a href="#partenariats" className="hover:text-slate-900">
             Dons
           </a>
-          <a href="#contact" className="hover:text-slate-900">
+          <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-slate-900">
             Contact
           </a>
         </nav>
@@ -308,7 +465,7 @@ export default function LandingPage() {
           />
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             {helpActions.map((action) => (
-              <ActionCard key={action.title} {...action} />
+              <ActionCard key={action.title} {...action} onClick={() => openHelpModal(action)} />
             ))}
           </div>
         </section>
@@ -342,9 +499,18 @@ export default function LandingPage() {
           aria-label="Sections à venir"
           className="rounded-3xl border border-dashed border-slate-300/90 bg-white/70 p-6 text-sm text-slate-600"
         >
-          <p className="mt-2">La structure de cette page permet d'ajouter ces sections sans refonte globale.</p>
         </section>
       </main>
+
+      <HelpModal
+        action={activeHelpAction}
+        isOpen={isHelpModalOpen}
+        onClose={closeHelpModal}
+        onCopyEmail={handleCopyEmail}
+        onSpreadWord={handleSpreadWord}
+        copyState={copyState}
+        spreadState={spreadState}
+      />
 
       <footer id="contact" className="border-t border-slate-200/80 bg-white/90">
         <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 md:grid-cols-[1.2fr_1fr_1fr] md:px-10">
@@ -365,21 +531,20 @@ export default function LandingPage() {
             <a href="#partenariats" className="hover:text-slate-900">
               Dons
             </a>
-            <a href="#contact" className="hover:text-slate-900">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-slate-900">
               Contact
             </a>
           </nav>
           <div className="text-sm text-slate-600">
             <p className="font-medium text-slate-900">Réseaux sociaux</p>
             <div className="mt-3 flex gap-3">
-              <a href="#" className="rounded-full border border-slate-300 px-3 py-1 hover:border-slate-500">
+              <a
+                href={LINKEDIN_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-slate-300 px-3 py-1 hover:border-slate-500"
+              >
                 LinkedIn
-              </a>
-              <a href="#" className="rounded-full border border-slate-300 px-3 py-1 hover:border-slate-500">
-                Instagram
-              </a>
-              <a href="#" className="rounded-full border border-slate-300 px-3 py-1 hover:border-slate-500">
-                YouTube
               </a>
             </div>
           </div>

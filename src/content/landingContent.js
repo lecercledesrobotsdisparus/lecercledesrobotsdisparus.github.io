@@ -49,27 +49,23 @@ export const helpActions = [
     description:
       "Confiez-nous des équipements inutilisés : nous les réemployons de manière responsable et transparente.",
     cta: "Proposer un don",
-    href: "#contact",
   },
   {
     title: "Financer un atelier",
     description:
       "Votre soutien permet d'ouvrir des ateliers à des publics qui ont rarement accès à ce type d'expériences.",
     cta: "Soutenir un atelier",
-    href: "#partenariats",
   },
   {
     title: "Devenir partenaire",
     description:
       "Construisons des projets communs entre recherche, éducation, culture et impact social.",
     cta: "Parler partenariat",
-    href: "#partenariats",
   },
   {
     title: "Contribuer bénévolement",
     description:
       "Rejoignez une équipe qui répare, transmet et imagine de nouveaux usages pour les technologies oubliées.",
     cta: "Rejoindre l'association",
-    href: "#contact",
   },
 ];
